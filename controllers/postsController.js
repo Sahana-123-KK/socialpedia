@@ -35,6 +35,23 @@ const deletePosts = async (req, res) => {
   }
 
   await PostsModel.findByIdAndDelete(id);
+
+  let itscomments = await CommentModel.find({ postid: id });
+  console.log(itscomments);
+
+  await Promise.all(
+    itscomments.map((item, ind) => {
+      return CommentModel.findByIdAndDelete(item._id);
+    })
+  );
+
+  let likes = await LikeModel.find({ postid: id });
+  await Promise.all(
+    likes.map((item, ind) => {
+      return LikeModel.findByIdAndDelete(item._id);
+    })
+  );
+
   res.json({ message: "Post Deleted Successfully" });
 };
 const getPosts = async (req, res) => {
@@ -137,6 +154,8 @@ const getUserPosts = async (req, res) => {
       // return PostsModel.find({ item.followerid: req.user });
     })
   );
+  res.json({ posts });
+
   // const posts = await PostsModel.find({userid:})
   // console.log(friendsid);
   // const posts = await Promise.all(
@@ -191,8 +210,6 @@ const getUserPosts = async (req, res) => {
   // allPosts = posts.map((item, ind) => {
   //   return { post: item, like: likescount[ind], comments: comments[ind] };
   // });
-
-  res.json({ posts });
 
   // posts.forEach(async (post) => {
   //   let commpro = [];
