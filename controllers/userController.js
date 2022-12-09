@@ -97,4 +97,12 @@ const completeProfile = async (req, res) => {
   res.json({ message: "Updated Profile Successfully", complete });
 };
 
-module.exports = { signup, login, completeProfile };
+const getAllProfiles = async (req, res) => {
+  try {
+    const allProfiles = await UserModel.find();
+    res.json({ allProfiles });
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = { signup, login, completeProfile, getAllProfiles };
