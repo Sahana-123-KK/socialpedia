@@ -6,16 +6,16 @@ const UserModel = require("../models/UserModel");
 const CommentModel = require("../models/CommentModel");
 
 const createPost = async (req, res) => {
-  const { title, message, pic, tags } = req.body;
-  if (!title || !message) {
+  const { message, pic, tags } = req.body;
+  if (!message) {
     return res.status(402).json({ error: "Fill All Mandatory Fields" });
   }
   const newPost = await PostsModel.create({
-    title,
     message,
     pic,
     tags,
     userid: req.user,
+    name: req.userdata.name,
   });
   res.json({ message: "Post Created Successfully", newPost });
 };
@@ -60,11 +60,9 @@ const getPosts = async (req, res) => {
 };
 
 const updatePost = async (req, res) => {
-  const { title, pic, message, tags } = req.body;
+  const { pic, message, tags } = req.body;
   let upPost = {};
-  if (title) {
-    upPost.title = title;
-  }
+
   if (message) {
     upPost.message = message;
   }

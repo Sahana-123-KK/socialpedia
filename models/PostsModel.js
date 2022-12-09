@@ -1,14 +1,15 @@
 const { default: mongoose } = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   userid: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  title: {
-    type: String,
-    required: true,
-  },
+
   message: {
     type: String,
     required: true,
@@ -32,7 +33,7 @@ const PostSchema = new mongoose.Schema({
     // required: true,
   },
   comments: {
-    type: [{ type:Object }],
+    type: [{ type: Object }],
   },
 });
 
