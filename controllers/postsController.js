@@ -90,9 +90,24 @@ const likePost = async (req, res) => {
   const liked = await LikeModel.findOne({ userid: req.user, postid: id });
   if (!liked) {
     newLike = await LikeModel.create({ postid: id, userid: req.user });
+    const post = await PostsModel.findById(id);
+    await PostsModel.findByIdAndUpdate(
+      id,
+      {
+        $set: { likeCount: post.likeCount + 1 },
+      },
+      { new: true }
+    );
     res.json({ message: "Liked the Post", newLike });
   } else {
     await LikeModel.findOneAndDelete({ userid: req.user, postid: id });
+    const post = await PostsModel.findById(id);
+    await PostsModel.findByIdAndUpdate(
+      id,
+      { $set: { likeCount: post.likeCount - 1 } },
+      { new: true }
+    );
+
     res.json({ message: "Unliked The Post" });
   }
 };
@@ -111,42 +126,73 @@ const getUserPosts = async (req, res) => {
   let allPosts = [];
   let tr = [];
   const friendsid = await RelationModel.find({ followerid: req.user });
-  // const posts = await PostsModel.find({userid:})
-  // console.log(friendsid);
+
   const posts = await Promise.all(
-    friendsid.map((item) => {
-      // console.log(item);
-      let some = { ...PostsModel.find({ userid: item.followedid.toString() }) };
-      tr = [...tr, some];
-      // return { ...posts, ...some };
+    // friendsid.forEach((id) => {
+    //   return PostsModel.find({ userid: id.followedid.toString() });
+    //   // console.log(post);
+    // })\
+    friendsid.map((item, ind) => {
+      return PostsModel.find({ userid: item.followedid.toString() });
+      // return PostsModel.find({ item.followerid: req.user });
     })
   );
-  console.log(tr);
+  // const posts = await PostsModel.find({userid:})
+  // console.log(friendsid);
+  // const posts = await Promise.all(
+  //   friendsid.map((item) => {
+  //     // console.log(item);
+  //     let some = PostsModel.find({ userid: item.followedid.toString() });
+  //     // let an = { ...some };
+  //     // some.forEach((post) => {
+  //     //   tr.push(post);
+  //     // });
+
+  //     console.log(some);
+
+  //     for (let int = 0; int < some.length; int++) {
+  //       const element = some[int];
+  //       tr.push(element);
+  //     }
+  //     console.log(tr);
+
+  //     return 2;
+  //   })
+  // );
+
+  // const comm = await Promise.all(
+  //   posts.map((item) => {
+  //     return CommentModel.find({ postid: item._id.toString() });
+  //   })
+  // );
+  // console.log(posts);
+
+  // console.log(tr);
   // let correctpost = posts[0];
   // console.log(correctpost);
 
-  const likescount = await Promise.all(
-    correctpost.map((item) => {
-      // console.log(item._id);
-      console.log(item);
-      // console.log(item._id.toString());
-      let likes = LikeModel.countDocuments({ postid: item._id.toString() });
-      return likes;
-    })
-  );
-  console.log(likescount);
+  // const likescount = await Promise.all(
+  //   correctpost.map((item) => {
+  //     // console.log(item._id);
+  //     console.log(item);
+  //     // console.log(item._id.toString());
+  //     let likes = LikeModel.countDocuments({ postid: item._id.toString() });
+  //     return likes;
+  //   })
+  // );
+  // console.log(likescount);
 
-  const comments = await Promise.all(
-    correctpost.map((item) => {
-      return CommentModel.find({ postid: item._id.toString() });
-    })
-  );
+  // const comments = await Promise.all(
+  //   correctpost.map((item) => {
+  //     return CommentModel.find({ postid: item._id.toString() });
+  //   })
+  // );
 
-  allPosts = posts.map((item, ind) => {
-    return { post: item, like: likescount[ind], comments: comments[ind] };
-  });
+  // allPosts = posts.map((item, ind) => {
+  //   return { post: item, like: likescount[ind], comments: comments[ind] };
+  // });
 
-  res.json({ allPosts });
+  res.json({ posts });
 
   // posts.forEach(async (post) => {
   //   let commpro = [];

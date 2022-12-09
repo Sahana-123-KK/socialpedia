@@ -26,6 +26,11 @@ const createComment = async (req, res) => {
       name: req.userdata.name,
       // profilePic: req.user.profilePic, -->Must b fixed later
     });
+    await PostsModel.findByIdAndUpdate(
+      postid,
+      { $set: { comments: [...isExists.comments, newComment] } },
+      { new: true }
+    );
 
     res.json({ message: "Comment Created Successfully", newComment });
   } catch (error) {
@@ -35,13 +40,16 @@ const createComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   const { id } = req.params;
+  const postid = req.header("postid");
 
   try {
     const valid = await mongoose.Types.ObjectId.isValid(id);
     if (!valid) {
       return res.status(402).json({ error: "Invalid Comment id" });
     }
-
+    if (!postid) {
+      return res.status(402).json({ error: "No Post Id" });
+    }
     const isExists = await CommentModel.findById(id);
 
     if (!isExists) {
@@ -51,7 +59,19 @@ const deleteComment = async (req, res) => {
     if (req.user !== isExists.userid.toString()) {
       return res.status(402).json({ error: "Not Allowed" });
     }
+    let postcommented = await PostsModel.findById(postid);
     await CommentModel.findByIdAndDelete(id);
+    let othercomments = postcommented.comments.filter((item, ind) => {
+      return item?._id.toString() !== id;
+    });
+
+    await PostsModel.findByIdAndUpdate(
+      postid,
+      { $set: { comments: othercomments } },
+      { new: true }
+    );
+
+    // await PostsModel.findByIdAndUpdate(postid,${set:{comments: othercomments}},{new:true})
     res.json({ message: "Comment Deleted Successfully" });
   } catch (error) {
     console.log(error);
@@ -60,7 +80,10 @@ const deleteComment = async (req, res) => {
 const updateComment = async (req, res) => {
   const { comment } = req.body;
   const { id } = req.params;
-
+  const postid = req.header("postid");
+  if (!postid) {
+    return res.status(402).json({ error: "No Post Id" });
+  }
   if (!comment) {
     return res.status(402).json({ error: "Fill All Mandatory Fields" });
   }
@@ -82,6 +105,19 @@ const updateComment = async (req, res) => {
     const upComment = await CommentModel.findByIdAndUpdate(
       id,
       { $set: { comment } },
+      { new: true }
+    );
+
+    const postup = await PostsModel.findById(postid);
+    let othercomments = postup.comments.filter((item, ind) => {
+      return item?._id.toString() !== id;
+    });
+
+    let correct = [...othercomments, upComment];
+
+    const upPost = await PostsModel.findByIdAndUpdate(
+      postid,
+      { $set: { comments: correct } },
       { new: true }
     );
 
