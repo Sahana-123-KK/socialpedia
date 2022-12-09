@@ -4,6 +4,7 @@ const {
   signup,
   login,
   getAllProfiles,
+  getUserProfile,
   completeProfile,
 } = require("../controllers/userController");
 const checkUser = require("../middleware/getUser");
@@ -16,5 +17,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.put("/completeprofile", checkUser, completeProfile);
 router.get("/allprofiles", getAllProfiles);
+router.get("/getuser/:id", getUserProfile);
 
 module.exports = router;

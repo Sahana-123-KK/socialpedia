@@ -16,6 +16,8 @@ const createPost = async (req, res) => {
     tags,
     userid: req.user,
     name: req.userdata.name,
+    city: req.userdata.city,
+    profilePic: req.userdata.profilePic,
   });
   res.json({ message: "Post Created Successfully", newPost });
 };

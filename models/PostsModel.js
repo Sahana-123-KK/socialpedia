@@ -5,6 +5,13 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  city: {
+    type: String,
+    required: true,
+  },
+  profilePic:{
+    type:String
+  },
   userid: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",

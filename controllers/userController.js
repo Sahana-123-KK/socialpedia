@@ -105,4 +105,19 @@ const getAllProfiles = async (req, res) => {
     console.log(error);
   }
 };
-module.exports = { signup, login, completeProfile, getAllProfiles };
+const getUserProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const getProfile = await UserModel.findById(id);
+    res.json({ profile: getProfile });
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = {
+  signup,
+  login,
+  completeProfile,
+  getAllProfiles,
+  getUserProfile,
+};
