@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  getOthersFriends,
   changeRelation,
   getFriends,
 } = require("../controllers/relationController");
@@ -12,4 +13,5 @@ router.get("/", (req, res) => {
 
 router.post("/change", checkUser, changeRelation);
 router.get("/getfriends", checkUser, getFriends);
+router.get("/getothersfriends", getOthersFriends);
 module.exports = router;

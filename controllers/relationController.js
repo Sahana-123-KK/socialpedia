@@ -47,5 +47,22 @@ const getFriends = async (req, res) => {
     console.log(error);
   }
 };
+const getOthersFriends = async (req, res) => {
+  const userId = req.header("userid");
+  if (!userId) {
+    return res.status(402).json({ error: "Send the userid" });
+  }
+  try {
+    const friendsid = await RelationModel.find({ followerid: userId });
+    const friendsProfile = await Promise.all(
+      friendsid.map((fr, ind) => {
+        return UserModel.findById(fr.followedid.toString());
+      })
+    );
+    res.json({ friends: friendsProfile });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-module.exports = { changeRelation, getFriends };
+module.exports = { changeRelation, getFriends, getOthersFriends };

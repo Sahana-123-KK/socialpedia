@@ -138,10 +138,25 @@ const getOurPosts = async (req, res) => {
   }
 };
 
+const getOthersPost = async (req, res) => {
+  const { userid } = req.body;
+  if (!userid) {
+    return res.status(402).json({ error: "Fill userid field" });
+  }
+  const posts = await PostsModel.find({ userid });
+
+  // const friendsid = await RelationModel.find({ followerid });
+  // const posts = await Promise.all(
+  //   friendsid.map((item, ind) => {
+  //     return PostsModel.find({ userid: item.followerid.toString() });
+  //   })
+  // );
+  return res.json({ posts });
+};
+
 const getUserPosts = async (req, res) => {
   // let try=[]
-  let allPosts = [];
-  let tr = [];
+
   const friendsid = await RelationModel.find({ followerid: req.user });
 
   const posts = await Promise.all(
@@ -238,4 +253,5 @@ module.exports = {
   likePost,
   getUserPosts,
   getOurPosts,
+  getOthersPost,
 };

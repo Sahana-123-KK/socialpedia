@@ -129,4 +129,17 @@ const updateComment = async (req, res) => {
     console.log(error);
   }
 };
-module.exports = { createComment, deleteComment, updateComment };
+
+const getComments = async (req, res) => {
+  const postid = req.header("postid");
+  if (!postid) {
+    return res.status(402).json({ error: "Send Postid" });
+  }
+  try {
+    const comments = await CommentModel.find({ postid });
+    res.json({ comments });
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = { getComments, createComment, deleteComment, updateComment };

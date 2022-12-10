@@ -5,6 +5,7 @@ const {
   createComment,
   deleteComment,
   updateComment,
+  getComments,
 } = require("../controllers/commentsController");
 
 router.get("/", (req, res) => {
@@ -14,6 +15,7 @@ router.get("/", (req, res) => {
 router.post("/create", checkUser, createComment);
 router.delete("/delete/:id", checkUser, deleteComment);
 router.put("/update/:id", checkUser, updateComment);
+router.get("/getcomments", getComments);
 // router.get("/postcomments/")
 
 module.exports = router;
