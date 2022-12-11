@@ -1,6 +1,7 @@
 const UserModel = require("../models/UserModel");
 const bycrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const RelationModel = require("../models/RelationModel");
 const KEY = "IWOULDALWAYSLOVETOBETHEBESTWHOWORSHIPSGODANDSHOWSGRATTITUDE";
 
 const signup = async (req, res) => {
@@ -100,6 +101,12 @@ const completeProfile = async (req, res) => {
 const getAllProfiles = async (req, res) => {
   try {
     const allProfiles = await UserModel.find();
+    // const friendsid = await RelationModel.find({ followerid: req.user });
+    //  const otherPeople = await Promise.all(
+    //   allProfiles.filter((item,ind)=>{
+    //     return friendsid.includes(item._id)
+    //   })
+    //  )
     res.json({ allProfiles });
   } catch (error) {
     console.log(error);

@@ -24,6 +24,7 @@ const createComment = async (req, res) => {
       comment,
       userid: req.user,
       name: req.userdata.name,
+      profilePic: req.userdata.profilePic,
       // profilePic: req.user.profilePic, -->Must b fixed later
     });
     await PostsModel.findByIdAndUpdate(
