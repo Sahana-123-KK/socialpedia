@@ -14,7 +14,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postsRoutes"));
 app.use("/api/comments", require("./routes/commentRoutes"));
-app.use("/api/relation",require("./routes/relationRoutes"))
+app.use("/api/relation", require("./routes/relationRoutes"));
+// app.use("/")
 // app.use("/api/likes")
 
 app.listen(9000, () => {

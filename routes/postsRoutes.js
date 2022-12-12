@@ -7,6 +7,7 @@ const {
   deletePosts,
   getUserPosts,
   getPosts,
+  saveOrUnsavePost,
   updatePost,
   likePost,
 } = require("../controllers/postsController");
@@ -23,5 +24,6 @@ router.post("/likepost/:id", checkUser, likePost);
 router.get("/userposts", checkUser, getUserPosts);
 router.get("/myposts", checkUser, getOurPosts);
 router.post("/getotherspost", getOthersPost);
+router.post("/saveposts", checkUser, saveOrUnsavePost);
 
 module.exports = router;

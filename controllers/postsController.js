@@ -4,6 +4,7 @@ const PostsModel = require("../models/PostsModel");
 const RelationModel = require("../models/RelationModel");
 const UserModel = require("../models/UserModel");
 const CommentModel = require("../models/CommentModel");
+const SavedPostsModel = require("../models/SavedPostsModel");
 
 const createPost = async (req, res) => {
   const { message, pic, tags } = req.body;
@@ -245,7 +246,71 @@ const getUserPosts = async (req, res) => {
   //   })
   // );
 };
+const saveOrUnsavePost = async (req, res) => {
+  const postid = req.header("postid");
+  try {
+    const exits = await SavedPostsModel.find({ userid: req.user });
+    // console.log(exits);
+    if (exits.length === 0) {
+      const addSavedPost = await SavedPostsModel.create({
+        userid: req.user,
+        postsSaved: [{ postid }],
+      });
+      res.json({ message: "Created Successfully", addSavedPost });
+    } else {
+      let postsarray = exits[0].postsSaved;
+      console.log(postsarray);
+      let flag = false;
+      // console.log(postsSaved);
+      console.log(flag);
+      postsarray.forEach((item) => {
+        // console.log(item);
+        // console.log(postid);
+        if (item.postid.toString() === postid) {
+          flag = true;
+          // break
+        }
+      });
+      console.log(flag);
+      if (!flag) {
+        // awai
+        const addpost = await SavedPostsModel.findByIdAndUpdate(
+          exits[0]._id,
+          {
+            $set: { postsSaved: [...exits[0].postsSaved, { postid }] },
+          },
+          { new: true }
+        );
+        res.json({ message: "Added to SavedPosts", addpost });
+      }
+      // if (exits[0].postsSaved.includes(postid)) {
+      //   let others = exits[0].postsSaved.filter((item, ind) => {
+      //     return item.toString() !== postid;
+      //   });
+      // }
+      else {
+        let others = exits[0].postsSaved.filter((item, ind) => {
+          console.log(item);
+          return item.postid.toString() !== postid;
+        });
+        const updated = await SavedPostsModel.findByIdAndUpdate(
+          exits[0]._id,
+          {
+            $set: {
+              postsSaved: others,
+            },
+          },
+          { new: true }
+        );
+        res.json({ message: "Removed From SavedPosts", updated });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
+  saveOrUnsavePost,
   createPost,
   deletePosts,
   getPosts,

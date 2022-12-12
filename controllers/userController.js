@@ -2,6 +2,8 @@ const UserModel = require("../models/UserModel");
 const bycrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const RelationModel = require("../models/RelationModel");
+const CommentModel = require("../models/CommentModel");
+const PostsModel = require("../models/PostsModel");
 const KEY = "IWOULDALWAYSLOVETOBETHEBESTWHOWORSHIPSGODANDSHOWSGRATTITUDE";
 
 const signup = async (req, res) => {
@@ -94,7 +96,33 @@ const completeProfile = async (req, res) => {
     { $set: upProfile },
     { new: true }
   );
+  const commts = await CommentModel.find({ userid: req.user });
 
+  await Promise.all(
+    commts.map((item, ind) => {
+      return CommentModel.findByIdAndUpdate(
+        item._id,
+        { $set: { profilePic } },
+        { new: true }
+      );
+    })
+  );
+  const postsall = await PostsModel.find({ userid: req.user });
+  await Promise.all(
+    postsall.map((item, ind) => {
+      return PostsModel.findByIdAndUpdate(
+        item._id,
+        { $set: { profilePic } },
+        { new: true }
+      );
+    })
+  );
+  // await CommentModel.findOneAndUpdate(
+  //   { userid: req.user },
+  //   { $set: { profilePic: profilePic } },
+  //   { new: true }
+  // );
+  // await PostsModel.find
   res.json({ message: "Updated Profile Successfully", complete });
 };
 
