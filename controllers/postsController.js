@@ -40,7 +40,7 @@ const deletePosts = async (req, res) => {
   await PostsModel.findByIdAndDelete(id);
 
   let itscomments = await CommentModel.find({ postid: id });
-  console.log(itscomments);
+  // console.log(itscomments);
 
   await Promise.all(
     itscomments.map((item, ind) => {
@@ -55,8 +55,28 @@ const deletePosts = async (req, res) => {
     })
   );
 
+  let savedposts = await SavedPostsModel.findOne({ userid: req.user });
+  console.log(savedposts);
+  let postssaved = savedposts.postsSaved;
+  console.log(postssaved);
+  if (postssaved.length !== 0) {
+    const others = postssaved.filter((post, ind) => {
+      return post.postid.toString() !== id;
+    });
+    console.log(others);
+
+    await SavedPostsModel.findByIdAndUpdate(
+      savedposts._id,
+      {
+        $set: { postsSaved: others },
+      },
+      { new: true }
+    );
+  }
   res.json({ message: "Post Deleted Successfully" });
 };
+
+// };
 const getPosts = async (req, res) => {
   const all = await PostsModel.find();
   res.json({ allPosts: all });
@@ -309,8 +329,39 @@ const saveOrUnsavePost = async (req, res) => {
     console.log(error);
   }
 };
+
+const getSavedPosts = async (req, res) => {
+  try {
+    const mySavedPosts = await SavedPostsModel.findOne({ userid: req.user });
+    res.json({ posts: mySavedPosts });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getFullSavedPosts = async (req, res) => {
+  try {
+    const savedPostsid = await SavedPostsModel.findOne({ userid: req.user });
+    // console.log(savedPostsid);
+    let postsidarr = savedPostsid?.postsSaved;
+    console.log(postsidarr);
+    const fullSavedPosts = await Promise.all(
+      postsidarr.map((item, ind) => {
+        return PostsModel.findById(item.postid);
+      })
+    );
+    // console.log(fullSavedPosts);
+    console.log(fullSavedPosts[0]);
+    // console.log(fullSavedPosts[1]);
+    console.log(fullSavedPosts.length);
+    res.json({ posts: fullSavedPosts });
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   saveOrUnsavePost,
+  getSavedPosts,
   createPost,
   deletePosts,
   getPosts,
@@ -319,4 +370,5 @@ module.exports = {
   getUserPosts,
   getOurPosts,
   getOthersPost,
+  getFullSavedPosts,
 };

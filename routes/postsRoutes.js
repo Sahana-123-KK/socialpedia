@@ -6,10 +6,12 @@ const {
   createPost,
   deletePosts,
   getUserPosts,
+  getSavedPosts,
   getPosts,
   saveOrUnsavePost,
   updatePost,
   likePost,
+  getFullSavedPosts,
 } = require("../controllers/postsController");
 const router = express.Router();
 router.get("/", (req, res) => {
@@ -25,5 +27,6 @@ router.get("/userposts", checkUser, getUserPosts);
 router.get("/myposts", checkUser, getOurPosts);
 router.post("/getotherspost", getOthersPost);
 router.post("/saveposts", checkUser, saveOrUnsavePost);
-
+router.get("/getsavedposts", checkUser, getSavedPosts);
+router.get("/getfullsavedposts", checkUser, getFullSavedPosts);
 module.exports = router;
