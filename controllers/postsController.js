@@ -256,7 +256,7 @@ const saveOrUnsavePost = async (req, res) => {
         userid: req.user,
         postsSaved: [{ postid }],
       });
-      res.json({ message: "Created Successfully", addSavedPost });
+      res.json({ message: "Created Successfully", posts: addSavedPost });
     } else {
       let postsarray = exits[0].postsSaved;
       console.log(postsarray);
@@ -281,7 +281,7 @@ const saveOrUnsavePost = async (req, res) => {
           },
           { new: true }
         );
-        res.json({ message: "Added to SavedPosts", addpost });
+        res.json({ message: "Added to SavedPosts", posts: addpost });
       }
       // if (exits[0].postsSaved.includes(postid)) {
       //   let others = exits[0].postsSaved.filter((item, ind) => {
@@ -302,7 +302,7 @@ const saveOrUnsavePost = async (req, res) => {
           },
           { new: true }
         );
-        res.json({ message: "Removed From SavedPosts", updated });
+        res.json({ message: "Removed From SavedPosts", posts: updated });
       }
     }
   } catch (error) {
